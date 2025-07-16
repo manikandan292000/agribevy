@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import { verifyToken } from '../../lib/Token';
 import { querys } from '../../lib/DbConnection';
 import { NextResponse } from 'next/server';
+export const dynamic = "force-dynamic";
 
 export async function POST(req) {
     try {

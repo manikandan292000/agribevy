@@ -1,7 +1,7 @@
 import { querys } from "@/src/app/lib/DbConnection";
 import { verifyToken } from "@/src/app/lib/Token";
 import { NextResponse } from "next/server";
-
+export const dynamic = "force-dynamic";
 
 export async function PUT(req) {
     try {
