@@ -17,7 +17,7 @@ export async function POST(req) {
         const role = decoded.role
         const mobile = decoded.mobile
 
-        const user = await req.json()
+        const user = await req.json()     
 
         // Validate input values
         if (!user.name || !user.password || !user.mobile) {
@@ -46,9 +46,12 @@ export async function POST(req) {
                 values: [marketerId]
             });
 
+            console.log(list);
+            
+
             const rows = await querys({
-                query: `INSERT INTO users (user_id, user_name, user_pwd, user_mobile, user_role, user_address, market, access, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                values: [id, user.name, hashPW, user.mobile, user.role, 'No need', list?.market, user.access, mobile]
+                query: `INSERT INTO users (user_id, user_name, user_pwd, user_mobile, user_role, user_address, market_id, access, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                values: [id, user.name, hashPW, user.mobile, user.role, 'No need', list?.market_id, user.access, mobile]
             });
 
             if (rows.affectedRows > 0) {
@@ -72,6 +75,8 @@ export async function POST(req) {
         }
 
     } catch (error) {
+        console.log(error);
+        
         if (error.code == 'ER_DUP_ENTRY') {
             return NextResponse.json({
                 message: 'Mobile Number already exists',

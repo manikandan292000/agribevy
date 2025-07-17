@@ -137,7 +137,7 @@ const Buyer = () => {
         setRemoveId(null)
         getBuyerList()
         setIsOffCanvasOpenEdit(false)
-        showAlert(false)
+        setShowAlert(false)
         setSuccessMsg(null)
       }, 2000)
     }
@@ -160,7 +160,7 @@ const Buyer = () => {
       setTimeout(() => {
         setSuccessMsg(null)
         setIsOffCanvasOpenEdit(false)
-        showAlert(false)
+        setShowAlert(false)
         reset2()
         getBuyerList()
         reset()

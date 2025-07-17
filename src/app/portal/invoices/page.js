@@ -227,6 +227,22 @@ const Invoices = () => {
                                     )}
                                 </section> */}
 
+                                {isModalOpen && (
+                                        <div className={`modal d-block modal-fullscreen`} tabIndex="-1">
+                                            <div className="modal-dialog modal-fullscreen">
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title text-center">{translations[app_language]?.bill}</h5>
+                                                        <button type="button" className="btn-close" onClick={closeModal}></button>
+                                                    </div>
+                                                    <div className="modal-body" >
+                                                        <MultiInvoice data={invoiceData} getInvoice={getInvoice} language={language} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
                                 <section id='all'>
                                     <div className='head pt-2 text-center my-4'>
                                         <h2 className='primary-color'>{translations[app_language]?.allBills}</h2>

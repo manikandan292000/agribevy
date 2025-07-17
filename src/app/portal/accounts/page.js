@@ -3,6 +3,7 @@ import AccessDenied from "@/src/Components/AccessDenied";
 import Loader from "@/src/Components/Loader";
 import React, { useEffect, useState } from "react";
 import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 import { useSelector } from "react-redux";
 import { getBalanceSheetDetailsAPI, getSalesColumnAPI, getSalesReportAPI, getSheetOptionsAPI, updateSalesColumnAPI } from "@/src/Components/Api";
 import * as XLSX from "xlsx";
@@ -33,6 +34,7 @@ const Accounts = () => {
     const initialVisibleColumns = [
         'Product', 'Farmer', 'Buyer', 'Farmer Bill', 'Sold at', 'Buyer Amount'
     ];
+    const base = process.env.NEXT_PUBLIC_BASE_URL
 
     const getAllOptions = async () => {
         setLoading(true);
@@ -105,13 +107,15 @@ const Accounts = () => {
             day: "numeric",
         });
     };
+
     const downloadInvoiceAsPDF = async () => {
         const pdf = new jsPDF('p', 'mm', 'a4'); // Portrait A4 size, mm units
         const pageWidth = pdf.internal.pageSize.width;
 
         // Extract the image path for the logo
         const path = userDetails.logo.split('\\');
-        const ImageURL = `http://localhost:3000/api/images/${path[path.length - 1]}`;
+        
+        const ImageURL = path[0];
 
         // Load the logo image (you can use an asynchronous method if needed)
         const img = new Image();
@@ -177,6 +181,7 @@ const Accounts = () => {
             );
 
             const headers = Array.from(tableElement.querySelectorAll('thead th')).map(th => th.innerText.trim());
+            console.log(typeof pdf.autoTable);
 
             // Add the table to the PDF
             const tableStartY = currentY; // Start position after the heading
@@ -248,7 +253,7 @@ const Accounts = () => {
 
         // Extract the image path for the logo
         const path = userDetails.logo.split('\\');
-        const ImageURL = `http://localhost:3000/api/images/${path[path.length - 1]}`;
+        const ImageURL = path[0]
 
         // Load the logo image (you can use an asynchronous method if needed)
         const img = new Image();
@@ -320,14 +325,13 @@ const Accounts = () => {
                 head: [headers],
                 body: rows,
                 startY: currentY,
-                styles: { font: "MyFont", fontSize: 10, cellPadding: 3 },
+                styles: { font: "helvetica", fontSize: 10, cellPadding: 3 },
                 headStyles: { fillColor: [200, 200, 200] },
             });
             // Save the PDF
             pdf.save(`sales-report-${selectedDate}.pdf`);
         };
     };
-
 
     const handlePeriodChange = (event) => {
         const selectedValue = event.target.value;
@@ -340,7 +344,6 @@ const Accounts = () => {
     const handleDateChange = (event) => {
         setSelectedDate(event.target.value)
     }
-
 
     const exportToExcel = () => {
         // Check if data exists
@@ -454,95 +457,6 @@ const Accounts = () => {
         XLSX.writeFile(wb, `balance-sheet-${timePeriod}.xlsx`);
     };
 
-    // const exportToExcelSales = () => {
-    //     // Check if data exists
-    //     if (!sales || sales.length === 0) {
-    //         alert("No data available to export!");
-    //         return;
-    //     }
-
-    //     // Prepare the summary data
-    //     const summaryData = [
-    //         ["Field", "Value"],
-    //         ["Sales Report for", selectedDate || "N/A"],
-    //         ["Generated On", new Date().toLocaleDateString("en-IN")]
-    //     ];
-
-    //     // Prepare data for export based on the table structure
-    //     const data = sales.map((sale) => ([
-    //         sale?.veg_name || "",
-    //         sale?.farmer_name || "",
-    //         sale?.buyer_address || "",
-    //         `₹${sale?.farmer_amount}` || 0,
-    //         `₹${sale?.amount}` || 0,
-    //         `₹${sale?.buyer_amount}` || 0,
-    //         sale?.farmer_status || "",
-    //         sale?.buyer_status || "",
-    //         (() => {
-    //             const amount = Number(sale?.amount);
-    //             const commission = Number(sale?.commission);
-    //             return isNaN(amount) || isNaN(commission) ? "Invalid data" : `₹${((amount * commission) / 100).toFixed(2)}`;
-    //         })(),
-    //         (() => {
-    //             const amount = Number(sale?.amount);
-    //             const commissionPercent = Number(sale?.commission);
-    //             const magamaiPercent = Number(sale?.magamai);
-    //             if (isNaN(amount) || isNaN(commissionPercent) || isNaN(magamaiPercent)) {
-    //                 return "Invalid data";
-    //             }
-    //             const commission = (amount * commissionPercent) / 100;
-    //             const magamai = (commission * magamaiPercent) / 100;
-    //             return `₹${magamai.toFixed(2)}`;
-    //         })(),
-    //         `₹${sale?.farmer_wage}` || 0,
-    //         `₹${sale?.farmer_rent}` || 0,
-    //         `₹${sale?.wage}` || 0,
-    //         `₹${sale?.rent}` || 0
-    //     ]));
-
-    //     // Define headers for the table
-    //     const tableHeaders = [
-    //         "Product", "Farmer", "Buyer", "Farmer Bill", "Sold at", "Buyer Amount",
-    //         "Farmer Payment", "Buyer Payment", "Commission", "Magamai", "Farmer Coolie", "Farmer Rent", "Buyer Coolie", "Buyer Rent"
-    //     ];
-
-    //     // Combine summary and table data
-    //     const combinedData = [
-    //         ...summaryData,
-    //         [], // Empty row as a separator
-    //         tableHeaders,
-    //         ...data
-    //     ];
-
-    //     // Create a sheet from combined data
-    //     const sheet = XLSX.utils.aoa_to_sheet(combinedData);
-
-    //     // Set column widths
-    //     sheet['!cols'] = [
-    //         { wch: 15 }, // Product
-    //         { wch: 20 }, // Farmer
-    //         { wch: 20 }, // Buyer
-    //         { wch: 10 }, // Bill (F)
-    //         { wch: 10 }, // Sold at
-    //         { wch: 10 }, // Amount (B)
-    //         { wch: 10 }, // Payment (F)
-    //         { wch: 10 }, // Payment (B)
-    //         { wch: 10 }, // Commission
-    //         { wch: 10 }, // Magamai
-    //         { wch: 10 }, // Coolie (F)
-    //         { wch: 10 }, // Rent (F)
-    //         { wch: 10 }, // Coolie (B)
-    //         { wch: 10 }  // Rent (B)
-    //     ];
-
-    //     // Create workbook and append the single sheet
-    //     const wb = XLSX.utils.book_new();
-    //     XLSX.utils.book_append_sheet(wb, sheet, "Sales Report");
-
-    //     // Export the workbook
-    //     XLSX.writeFile(wb, `sales-report-${selectedDate || "unknown"}.xlsx`);
-    // };
-
 
     const exportToExcelSales = () => {
         // Check if there is data to export
@@ -550,8 +464,7 @@ const Accounts = () => {
             alert("No data available to export!");
             return;
         }
-
-        // Get the visible column headers (using the `name` field for column labels)
+        // Get the visible column headers (using the name field for column labels)
         const visibleColumnHeaders = columns.map((col) => col.columnName);
 
         // Prepare the summary data
@@ -622,7 +535,7 @@ const Accounts = () => {
         const sheet = XLSX.utils.aoa_to_sheet(combinedData);
 
         // Dynamically set column widths based on visible columns
-        sheet["!cols"] = visibleHeaders.map(() => ({ wch: 20 })); // Adjust `wch` for desired width
+        sheet["!cols"] = visibleHeaders.map(() => ({ wch: 20 })); // Adjust wch for desired width
 
         // Create a new workbook and append the sheet
         const workbook = XLSX.utils.book_new();
@@ -631,7 +544,6 @@ const Accounts = () => {
         // Export the workbook to a file
         XLSX.writeFile(workbook, `sales-report-${selectedDate || "unknown"}.xlsx`);
     };
-
 
     const swicthBalance = () => {
         setMode("balancesheet")

@@ -38,8 +38,9 @@ export default function Register() {
     } else {
       payload = { ...data, role, market: "" };
     }
-
+console.log(payload);
     const response = await registerUserAPI(payload);
+
 
     if (response?.status === 200) {
       setSuccessMsg("Login after some time");
@@ -208,7 +209,7 @@ export default function Register() {
                                   ref={(el) => (listItemRefs.current[i] = el)}
                                   onClick={() => {
                                     marketInputRef.current.value = item.market_name;
-                                    market.current = item.market_name;
+                                    market.current = item.market_id;
                                     setFilteredMarkets([]);
                                   }}
                                   onMouseEnter={() => setActiveItemIndex(i)}

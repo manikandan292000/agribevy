@@ -3391,7 +3391,7 @@ button.sack_btn:active {
 
 .edit-assistant {
   position: absolute;
-  top: 0px;
+  top: 20px;
   left: 250px;
 }
 .profile-card {
@@ -3429,4 +3429,17 @@ button.sack_btn:active {
 .add_icon svg{
   cursor: pointer;
   color: #fff;
+}
+/* login page */
+@media (max-width: 768px) {
+  .eye2 {
+    position: absolute;
+    top: 41px;
+}
+@media(max-width:900px) {
+  .eye2 {
+    position: absolute;
+    top: 56px;
+}
+}
 }
